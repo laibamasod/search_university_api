@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search a University by Name!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <header class="text-gray-600 body-font">
+      <div
+        class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center"
+      >
+        <nav
+          class="md:ml-auto flex flex-wrap items-center text-base justify-center"
+        >
+          <a
+          href="/see_country_universities"
+            style="cursor: pointer"
+            class="text-white hover:text-black-900 bg-pink-500 py-2 px-5 focus:outline-none hover:bg-pink-600"
+            >Search All Universities in a City</a
+          >
+        </nav>
+      </div>
+    </header>
+    <section class="text-gray-600 body-font">
+      <form onsubmit="Search(event); return false;">
+        <br /><br />
+        <div
+          class="flex lg:w-2/3 w-full sm:flex-row flex-col mx-auto px-8 sm:space-x-4 sm:space-y-0 space-y-4 sm:px-0 items-end"
+        >
+          <div class="relative flex-grow w-full">
+            <label for="uni_name" class="leading-7 text-sm text-gray-600"
+              >University Name:</label
+            >
+            <input
+              type="text"
+              id="uni_name"
+              name="uni_name"
+              class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-pink-500 focus:bg-transparent focus:ring-2 focus:ring-pink-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+            />
+          </div>
+          <input
+            type="submit"
+            value="Search"
+            class="text-white bg-pink-500 border-0 py-2 px-8 focus:outline-none hover:bg-pink-600 rounded text-lg"
+          />
+        </div>
+      </form>
+      <br /><br /><br />
+      <div class="flex lg:w-2/3 w-full sm:flex-row flex-col mx-auto px-8 sm:space-x-4 sm:space-y-0 space-y-4 sm:px-0 items-end" id="result"></div>
+    </section>
+    <script>
+      async function Search(event) {
+        event.preventDefault();
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML='';
+        const uniName = document.getElementById("uni_name").value;
+
+        // Define the API endpoint
+        const apiUrl = `http://universities.hipolabs.com/search?name=${uniName}`;
+        console.log(apiUrl);
+        try {
+          // Fetch data from the API and await the response
+          const response = await fetch(apiUrl);
+
+          if (response.ok) {
+            // Get the JSON data
+            const data = await response.json();
+            console.log(data.web_pages);
+
+            // Open the new page in a new tab or window
+           
+            if(data.length>0){
+              const webPages = data.map(university => university.web_pages);
+              console.log(webPages)
+              webPages.forEach((webPage)=>{
+                resultDiv.innerHTML += webPage+"<br>";
+              })
+            }
+            else{
+              resultDiv.innerHTML="No Universities with this name!";
+            }
+           
+          } else {
+            console.error(
+              "Error Displaying Universities:",
+              response.statusText
+            );
+          }
+        } catch (error) {
+          console.error("Error Displaying Universities:", error);
+        }
+      }
+    </script>
+  </body>
+</html>
